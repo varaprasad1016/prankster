@@ -1,0 +1,804 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>KÆSURA — a gallery you hear first</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,340&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --wall: #10201b;
+  --wall-deep: #0a1511;
+  --bone: #ece4d2;
+  --bone-dim: #9aa89c;
+  --brass: #c89a4a;
+  --line: rgba(236,228,210,.14);
+  --glow: rgba(200,154,74,.5);
+  box-sizing: border-box;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --wall: #e9e3d6;
+    --wall-deep: #ddd5c3;
+    --bone: #20302a;
+    --bone-dim: #5f6b60;
+    --brass: #9a6c1e;
+    --line: rgba(32,48,42,.16);
+    --glow: rgba(154,108,30,.35);
+  }
+}
+
+:root[data-theme="dark"] {
+  --wall: #10201b;
+  --wall-deep: #0a1511;
+  --bone: #ece4d2;
+  --bone-dim: #9aa89c;
+  --brass: #c89a4a;
+  --line: rgba(236,228,210,.14);
+  --glow: rgba(200,154,74,.5);
+}
+
+* {
+  box-sizing: inherit;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  min-height: 100%;
+}
+
+body {
+  background: var(--wall);
+  color: var(--bone);
+  font-family: "Fraunces", Georgia, serif;
+  font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
+.mono {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(
+    120% 80% at 50% 8%,
+    transparent 40%,
+    var(--wall-deep) 100%
+  );
+}
+
+/* Entrance screen */
+#threshold {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 2.2rem;
+  padding: 2rem;
+  background: var(--wall-deep);
+  transition: opacity 1.6s ease;
+}
+
+#threshold.gone {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.mark {
+  font-size: clamp(2.6rem, 11vw, 5.5rem);
+  font-weight: 340;
+  letter-spacing: .14em;
+  padding-left: .14em;
+  line-height: 1;
+}
+
+.sub {
+  color: var(--bone-dim);
+  font-size: .82rem;
+  letter-spacing: .34em;
+  text-transform: uppercase;
+}
+
+.sub.mono {
+  font-size: .72rem;
+  letter-spacing: .28em;
+}
+
+.enter {
+  appearance: none;
+  border: 1px solid var(--brass);
+  background: transparent;
+  color: var(--bone);
+  font-family: inherit;
+  font-size: 1.05rem;
+  letter-spacing: .04em;
+  padding: 1rem 2.4rem;
+  border-radius: 999px;
+  cursor: pointer;
+  position: relative;
+  transition: color .4s, background .4s;
+}
+
+.enter:hover,
+.enter:focus-visible {
+  background: var(--brass);
+  color: var(--wall-deep);
+  outline: none;
+}
+
+.enter .ring {
+  position: absolute;
+  inset: -7px;
+  border-radius: 999px;
+  border: 1px solid var(--glow);
+  animation: pulse 3.4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: .5; }
+  50% { transform: scale(1.09); opacity: 0; }
+}
+
+/* Gallery */
+main {
+  position: relative;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 1.8s ease .4s;
+}
+
+main.lit {
+  opacity: 1;
+}
+
+.wrap {
+  max-width: 62rem;
+  margin: 0 auto;
+  padding: 0 1.6rem;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: calc(env(safe-area-inset-top, 0px) + 1.3rem) 1.6rem 1.3rem;
+  max-width: 62rem;
+  margin: 0 auto;
+}
+
+header .name {
+  font-size: 1.1rem;
+  letter-spacing: .22em;
+  padding-left: .22em;
+}
+
+header nav {
+  display: flex;
+  gap: 1.3rem;
+  color: var(--bone-dim);
+  font-size: .72rem;
+  letter-spacing: .22em;
+}
+
+header nav span {
+  text-transform: uppercase;
+}
+
+.hero {
+  padding: 12vh 0 8vh;
+}
+
+.hero h1 {
+  font-size: clamp(3rem, 13.5vw, 8.5rem);
+  font-weight: 300;
+  line-height: .96;
+  letter-spacing: -.01em;
+  max-width: 14ch;
+}
+
+.hero h1 em {
+  font-style: italic;
+  color: var(--brass);
+  font-weight: 340;
+}
+
+.hero p {
+  margin-top: 2.4rem;
+  max-width: 46ch;
+  color: var(--bone-dim);
+  font-size: clamp(1rem, 2.6vw, 1.2rem);
+  line-height: 1.7;
+}
+
+/* Artwork list */
+.works {
+  padding-bottom: 9rem;
+}
+
+.work {
+  display: grid;
+  grid-template-columns: 4.2rem 1fr auto;
+  gap: 1.4rem;
+  align-items: baseline;
+  padding: 2.1rem 0;
+  border-top: 1px solid var(--line);
+}
+
+.work:last-child {
+  border-bottom: 1px solid var(--line);
+}
+
+.work .idx {
+  color: var(--brass);
+  font-size: .8rem;
+}
+
+.work h3 {
+  font-weight: 340;
+  font-size: clamp(1.3rem, 4.6vw, 2rem);
+  line-height: 1.1;
+}
+
+.work .meta {
+  color: var(--bone-dim);
+  margin-top: .5rem;
+  font-size: .82rem;
+  letter-spacing: .12em;
+}
+
+.work .dur {
+  color: var(--bone-dim);
+  font-size: .78rem;
+  white-space: nowrap;
+  align-self: center;
+}
+
+@media (max-width: 560px) {
+  .work {
+    grid-template-columns: 2.6rem 1fr;
+  }
+
+  .work .dur {
+    grid-column: 2;
+    margin-top: .4rem;
+  }
+
+  header nav {
+    gap: .65rem;
+    letter-spacing: .1em;
+    font-size: .62rem;
+  }
+}
+
+/* Footer */
+footer {
+  padding: 3rem 1.6rem calc(env(safe-area-inset-bottom, 0px) + 7rem);
+  max-width: 62rem;
+  margin: 0 auto;
+  color: var(--bone-dim);
+  font-size: .74rem;
+  letter-spacing: .14em;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+/* Floating sound controls */
+#dock {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 1.1rem);
+  z-index: 30;
+  display: none;
+  align-items: center;
+  gap: .9rem;
+  padding: .7rem .9rem .7rem 1.1rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--wall-deep) 86%, transparent);
+  border: 1px solid var(--line);
+  backdrop-filter: blur(14px);
+  max-width: calc(100vw - 2rem);
+}
+
+#dock.show {
+  display: flex;
+}
+
+.meter {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 20px;
+  width: 34px;
+}
+
+.meter i {
+  flex: 1;
+  background: var(--brass);
+  height: 12%;
+  border-radius: 1px;
+  opacity: .85;
+  transition: height .12s linear;
+}
+
+.readout {
+  font-size: .68rem;
+  letter-spacing: .1em;
+  color: var(--bone-dim);
+  white-space: nowrap;
+}
+
+.readout b {
+  color: var(--bone);
+  font-weight: 500;
+}
+
+.snd {
+  appearance: none;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--bone);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: .68rem;
+  letter-spacing: .08em;
+  padding: .5rem .85rem;
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color .3s, color .3s;
+}
+
+.snd:hover,
+.snd:focus-visible {
+  border-color: var(--brass);
+  color: var(--brass);
+  outline: none;
+}
+
+.snd[data-on="false"] {
+  color: var(--bone-dim);
+}
+
+@media (max-width: 420px) {
+  #dock {
+    gap: .5rem;
+    padding: .6rem .65rem;
+  }
+
+  .readout {
+    font-size: .6rem;
+    letter-spacing: .03em;
+  }
+
+  .snd {
+    font-size: .6rem;
+    padding: .45rem .6rem;
+  }
+
+  .meter {
+    width: 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition-duration: .001ms !important;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--brass);
+  outline-offset: 3px;
+}
+</style>
+</head>
+
+<body>
+
+<section id="threshold">
+  <div class="sub mono">Est. MMXXVI — Sound &amp; Image</div>
+  <div class="mark">KÆSURA</div>
+  <div class="sub">A gallery you hear first</div>
+
+  <button
+    class="enter"
+    id="enter"
+    aria-label="Enter the gallery and start the ambient sound"
+  >
+    <span class="ring" aria-hidden="true"></span>
+    Enter the room
+  </button>
+
+  <div class="sub mono" style="opacity:.6">
+    Sound begins on entry · mutable at any time
+  </div>
+</section>
+
+<main id="room" aria-hidden="true">
+  <header>
+    <div class="name">KÆSURA</div>
+    <nav aria-label="Main navigation">
+      <span>Works</span>
+      <span>About</span>
+      <span>Contact</span>
+    </nav>
+  </header>
+
+  <div class="wrap">
+    <section class="hero">
+      <h1>
+        Some rooms you walk into. This one
+        <em>walks into you.</em>
+      </h1>
+
+      <p>
+        KÆSURA is a listening gallery: a standing drone the building has held
+        since you arrived, and a handful of works that sit inside it. The sound
+        is the first exhibit. You can quiet it whenever you like — that choice
+        is part of the piece.
+      </p>
+    </section>
+
+    <section class="works" aria-label="Gallery works">
+      <div class="work">
+        <div class="idx mono">01</div>
+        <div>
+          <h3>Antechamber (standing wave)</h3>
+          <div class="meta mono">
+            GENERATIVE DRONE · WEB AUDIO · LOOPLESS
+          </div>
+        </div>
+        <div class="dur mono">∞</div>
+      </div>
+
+      <div class="work">
+        <div class="idx mono">02</div>
+        <div>
+          <h3>Four studies in held breath</h3>
+          <div class="meta mono">
+            PIGMENT, BRASS LEAF ON LINEN · 2026
+          </div>
+        </div>
+        <div class="dur mono">quartet</div>
+      </div>
+
+      <div class="work">
+        <div class="idx mono">03</div>
+        <div>
+          <h3>Notes toward a quieter exit</h3>
+          <div class="meta mono">
+            SILVER GELATIN, SOUND SCORE · 2025
+          </div>
+        </div>
+        <div class="dur mono">11:02</div>
+      </div>
+
+      <div class="work">
+        <div class="idx mono">04</div>
+        <div>
+          <h3>Caesura, after the room empties</h3>
+          <div class="meta mono">
+            INK, FIELD RECORDING · 2026
+          </div>
+        </div>
+        <div class="dur mono">var.</div>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <span class="mono">KÆSURA · A LISTENING GALLERY</span>
+    <span class="mono">© MMXXVI</span>
+  </footer>
+</main>
+
+<div id="dock" role="group" aria-label="Sound controls">
+  <div class="meter" aria-hidden="true">
+    <i></i><i></i><i></i><i></i><i></i>
+  </div>
+
+  <div class="readout">
+    Room tone · <b id="note">Ready</b>
+  </div>
+
+  <button
+    class="snd"
+    id="toggle"
+    data-on="true"
+    aria-pressed="true"
+  >
+    SOUND ON — MUTE
+  </button>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // Audio file in the root of your GitHub main branch.
+  const AUDIO_FILE =
+    "./girl-moaning-during-a-simulated-orgasm.wav";
+
+  const PLAYBACK_VOLUME = 0.8;
+  const FADE_IN_MS = 4000;
+  const FADE_OUT_MS = 900;
+
+  const enterBtn = document.getElementById("enter");
+  const threshold = document.getElementById("threshold");
+  const room = document.getElementById("room");
+  const dock = document.getElementById("dock");
+  const toggle = document.getElementById("toggle");
+  const noteEl = document.getElementById("note");
+  const bars = Array.from(document.querySelectorAll(".meter i"));
+
+  let audio = null;
+  let on = true;
+  let entered = false;
+  let fadeTimer = null;
+  let animationFrame = null;
+  let audioContext = null;
+  let analyser = null;
+  let sourceNode = null;
+  let frequencyData = null;
+
+  function updateButton() {
+    toggle.dataset.on = String(on);
+    toggle.setAttribute("aria-pressed", String(on));
+    toggle.textContent = on
+      ? "SOUND ON — MUTE"
+      : "SOUND OFF — RESUME";
+  }
+
+  function initialiseAudio() {
+    if (audio) return audio;
+
+    audio = new Audio(AUDIO_FILE);
+    audio.loop = true;
+    audio.preload = "auto";
+    audio.volume = 0;
+
+    audio.addEventListener("playing", () => {
+      noteEl.textContent = "Playing";
+      startMeter();
+    });
+
+    audio.addEventListener("pause", () => {
+      if (!on) noteEl.textContent = "Muted";
+      stopMeter();
+    });
+
+    audio.addEventListener("error", () => {
+      noteEl.textContent = "Audio unavailable";
+      stopMeter();
+      console.error(
+        "Could not load the audio file:",
+        AUDIO_FILE,
+        audio.error
+      );
+    });
+
+    return audio;
+  }
+
+  function fadeVolume(target, duration, onComplete) {
+    if (!audio) return;
+
+    if (fadeTimer !== null) {
+      clearInterval(fadeTimer);
+      fadeTimer = null;
+    }
+
+    const initial = audio.volume;
+    const steps = Math.max(1, Math.ceil(duration / 30));
+    let step = 0;
+
+    if (duration <= 0) {
+      audio.volume = target;
+      if (onComplete) onComplete();
+      return;
+    }
+
+    fadeTimer = setInterval(() => {
+      step++;
+
+      const progress = Math.min(step / steps, 1);
+      audio.volume = Math.max(
+        0,
+        Math.min(1, initial + (target - initial) * progress)
+      );
+
+      if (step >= steps) {
+        clearInterval(fadeTimer);
+        fadeTimer = null;
+        audio.volume = target;
+
+        if (onComplete) onComplete();
+      }
+    }, duration / steps);
+  }
+
+  async function playAudio() {
+    const player = initialiseAudio();
+
+    try {
+      await player.play();
+
+      if (!on) {
+        player.pause();
+        return;
+      }
+
+      fadeVolume(PLAYBACK_VOLUME, FADE_IN_MS);
+      noteEl.textContent = "Ambient audio";
+    } catch (error) {
+      noteEl.textContent = "Tap to retry";
+      console.error("Audio playback failed:", error);
+    }
+  }
+
+  function muteAudio() {
+    if (!audio) {
+      noteEl.textContent = "Muted";
+      return;
+    }
+
+    fadeVolume(0, FADE_OUT_MS, () => {
+      if (!on && audio) audio.pause();
+    });
+
+    noteEl.textContent = "Muted";
+  }
+
+  function setupAnalyser() {
+    if (audioContext || !audio) return;
+
+    try {
+      const AudioContextClass =
+        window.AudioContext || window.webkitAudioContext;
+
+      if (!AudioContextClass) return;
+
+      audioContext = new AudioContextClass();
+      analyser = audioContext.createAnalyser();
+      analyser.fftSize = 64;
+
+      frequencyData = new Uint8Array(analyser.frequencyBinCount);
+
+      sourceNode = audioContext.createMediaElementSource(audio);
+      sourceNode.connect(analyser);
+      analyser.connect(audioContext.destination);
+    } catch (error) {
+      console.warn("Audio meter unavailable:", error);
+    }
+  }
+
+  function startMeter() {
+    if (!audio || audio.paused || document.hidden) return;
+
+    setupAnalyser();
+
+    if (audioContext && audioContext.state === "suspended") {
+      audioContext.resume().catch(() => {});
+    }
+
+    if (animationFrame !== null) return;
+
+    function animate() {
+      animationFrame = null;
+
+      if (!audio || audio.paused || document.hidden) return;
+
+      if (analyser && frequencyData) {
+        analyser.getByteFrequencyData(frequencyData);
+
+        const step = Math.max(
+          1,
+          Math.floor(frequencyData.length / bars.length)
+        );
+
+        bars.forEach((bar, index) => {
+          const value = frequencyData[index * step] / 255;
+          bar.style.height = Math.max(12, value * 100) + "%";
+        });
+      }
+
+      animationFrame = requestAnimationFrame(animate);
+    }
+
+    animationFrame = requestAnimationFrame(animate);
+  }
+
+  function stopMeter() {
+    if (animationFrame !== null) {
+      cancelAnimationFrame(animationFrame);
+      animationFrame = null;
+    }
+
+    bars.forEach(bar => {
+      bar.style.height = "12%";
+    });
+  }
+
+  enterBtn.addEventListener("click", () => {
+    if (entered) return;
+    entered = true;
+
+    threshold.classList.add("gone");
+    room.classList.add("lit");
+    room.setAttribute("aria-hidden", "false");
+    dock.classList.add("show");
+
+    if (on) {
+      playAudio();
+    } else {
+      noteEl.textContent = "Muted";
+    }
+  });
+
+  toggle.addEventListener("click", async () => {
+    on = !on;
+    updateButton();
+
+    if (!entered) return;
+
+    if (on) {
+      if (audio && !audio.paused) {
+        fadeVolume(PLAYBACK_VOLUME, 1200);
+      } else {
+        await playAudio();
+      }
+    } else {
+      muteAudio();
+    }
+  });
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      stopMeter();
+    } else if (audio && !audio.paused) {
+      startMeter();
+    }
+  });
+
+  window.addEventListener("pagehide", () => {
+    if (fadeTimer !== null) {
+      clearInterval(fadeTimer);
+      fadeTimer = null;
+    }
+
+    stopMeter();
+
+    if (audio) audio.pause();
+
+    if (audioContext && audioContext.state !== "closed") {
+      audioContext.close().catch(() => {});
+    }
+  });
+
+  updateButton();
+})();
+</script>
+
+</body>
+</html>
